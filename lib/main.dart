@@ -1,5 +1,6 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,19 +15,19 @@ class MyApp extends StatelessWidget {
       title: 'Routing',
       initialRoute: '/',
       routes: <String, WidgetBuilder>{
-        '/': (BuildContext context) =>
-            const MyHomePage(title: 'Flutter Demo Home Page', path: '/second'),
-        '/second': (BuildContext context) => const Second(
+        '/': (BuildContext context) => const MyHomePage(
+            title: 'Flutter Demo Home Page', nextPage: '/screen2'),
+        '/screen2': (BuildContext context) => const Second(
               title: 'Second Page',
-              nextPath: '/third',
+              nextPage: '/screen3',
             ),
-        '/third': (BuildContext context) => const Third(
+        '/screen3': (BuildContext context) => const Third(
               title: 'Third Page',
-              nextPath: '/fourth',
+              nextPage: '/screen4',
             ),
-        '/fourth': (BuildContext context) => const Fourth(
+        '/screen4': (BuildContext context) => const Fourth(
               title: 'Fourth Page',
-              nextPath: '/',
+              nextPage: '/',
             ),
       },
     );
@@ -34,11 +35,10 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title, required this.path})
+  const MyHomePage({Key? key, required this.title, required this.nextPage})
       : super(key: key);
-
   final String title;
-  final String path;
+  final String nextPage;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -47,108 +47,76 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-          backgroundColor: const Color.fromARGB(225, 28, 27, 27),
-        ),
-        body: MyStack(widget.title, widget.path));
+    return MyStack(widget.title, widget.nextPage);
   }
 }
 
-class Second extends StatelessWidget {
-  const Second({Key? key, required this.title, required this.nextPath})
+class Second extends StatefulWidget {
+  const Second({Key? key, required this.title, required this.nextPage})
       : super(key: key);
   final String title;
-  final String nextPath;
+  final String nextPage;
 
   @override
+  State<Second> createState() => _SecondState();
+}
+
+class _SecondState extends State<Second> {
+  @override
   Widget build(BuildContext context) {
-    return Navigator(
-      initialRoute: 'second',
-      onGenerateRoute: (RouteSettings settings) {
-        WidgetBuilder builder;
-        switch (settings.name) {
-          case 'second':
-            builder = (BuildContext context) => MyStack(title, nextPath);
-            break;
-          default:
-            throw Exception('Invalid route: ${settings.name}');
-        }
-        return MaterialPageRoute<void>(builder: builder, settings: settings);
-      },
-    );
+    return MyStack(widget.title, widget.nextPage);
+    // return Navigator(
+    //   initialRoute: path,
+    //   onGenerateRoute: (RouteSettings settings) {
+    //     WidgetBuilder builder;
+    //     switch (settings.name) {
+    //       case path:
+    //         builder = (BuildContext context) =>
+    //             MyStack(widget.title, widget.nextPath);
+    //         break;
+    //       default:
+    //         throw Exception('Invalid route: ${settings.name}');
+    //     }
+    //     return MaterialPageRoute<void>(builder: builder, settings: settings);
+    //   },
+    // );
   }
 }
 
-class Third extends StatelessWidget {
-  const Third({Key? key, required this.title, required this.nextPath})
+class Third extends StatefulWidget {
+  const Third({Key? key, required this.title, required this.nextPage})
       : super(key: key);
   final String title;
-  final String nextPath;
+  final String nextPage;
 
   @override
+  State<Third> createState() => _ThirdState();
+}
+
+class _ThirdState extends State<Third> {
+  @override
   Widget build(BuildContext context) {
-    return Navigator(
-      initialRoute: 'third',
-      onGenerateRoute: (RouteSettings settings) {
-        WidgetBuilder builder;
-        switch (settings.name) {
-          case 'third':
-            builder = (BuildContext context) => MyStack(title, nextPath);
-            break;
-          default:
-            throw Exception('Invalid route: ${settings.name}');
-        }
-        return MaterialPageRoute<void>(builder: builder, settings: settings);
-      },
-    );
+    return MyStack(widget.title, widget.nextPage);
   }
 }
 
-class Fourth extends StatelessWidget {
-  const Fourth({Key? key, required this.title, required this.nextPath})
+class Fourth extends StatefulWidget {
+  const Fourth({Key? key, required this.title, required this.nextPage})
       : super(key: key);
   final String title;
-  final String nextPath;
+  final String nextPage;
 
   @override
-  Widget build(BuildContext context) {
-    return Navigator(
-      initialRoute: 'fourth',
-      onGenerateRoute: (RouteSettings settings) {
-        WidgetBuilder builder;
-        switch (settings.name) {
-          case 'fourth':
-            builder = (BuildContext context) => MyStack(title, nextPath);
-            break;
-          default:
-            throw Exception('Invalid route: ${settings.name}');
-        }
-        return MaterialPageRoute<void>(builder: builder, settings: settings);
-      },
-    );
-  }
+  State<Fourth> createState() => _FourthState();
 }
 
-class Empty extends StatelessWidget {
-  final String label;
-  const Empty(this.label, {Key? key}) : super(key: key);
-
+class _FourthState extends State<Fourth> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
-      alignment: Alignment.center,
-      color: const Color.fromARGB(225, 28, 27, 27),
-      child: Text(
-        label,
-        style: const TextStyle(
-            color: Color.fromARGB(170, 255, 255, 255),
-            decoration: TextDecoration.none),
-      ),
-    );
+    return Stack(children: [
+      MyStack(widget.title, widget.nextPage),
+      const Center(child: MyDialog())
+    ]);
   }
 }
 
@@ -160,20 +128,83 @@ class MyStack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Expanded(child: Empty(title)),
-        Container(
-          alignment: Alignment.bottomRight,
-          padding: const EdgeInsetsDirectional.all(40),
-          child: FloatingActionButton.extended(
-            onPressed: () {
-              Navigator.pushNamed(context, nextPage);
-            },
-            label: const Text('Next Page', style: TextStyle()),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+        backgroundColor: const Color.fromARGB(225, 28, 27, 27),
+      ),
+      body: Stack(
+        children: [
+          Expanded(
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              alignment: Alignment.center,
+              color: const Color.fromARGB(225, 28, 27, 27),
+              child: Text(
+                title,
+                style: const TextStyle(
+                    color: Color.fromARGB(170, 255, 255, 255),
+                    decoration: TextDecoration.none),
+              ),
+            ),
           ),
-        )
-      ],
+          Container(
+            alignment: Alignment.bottomRight,
+            padding: const EdgeInsetsDirectional.all(40),
+            child: FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.of(context).pushNamed(nextPage);
+              },
+              label: const Text('Next Page', style: TextStyle()),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class MyDialog extends StatelessWidget {
+  const MyDialog({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () => showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Center(child: Text('Go to homePage?')),
+          content: const Icon(
+            Icons.home,
+            color: Color.fromARGB(157, 41, 41, 41),
+            size: 100,
+          ),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.of(context)
+                      .pushNamedAndRemoveUntil('/', (route) => false),
+                  child: const Text(
+                    'OK',
+                    style: TextStyle(color: Color.fromARGB(157, 41, 41, 41)),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop('Cansel'),
+                  child: const Text(
+                    'CANCEL',
+                    style: TextStyle(color: Color.fromARGB(157, 41, 41, 41)),
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+      child: const Text('Show Dialog'),
     );
   }
 }
