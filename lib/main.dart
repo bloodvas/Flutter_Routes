@@ -193,7 +193,7 @@ class MyDialog extends StatelessWidget {
                   ),
                 ),
                 TextButton(
-                  onPressed: () => Navigator.of(context).pop('Cansel'),
+                  onPressed: () => Navigator.of(context).pop('Cancel'),
                   child: const Text(
                     'CANCEL',
                     style: TextStyle(color: Color.fromARGB(157, 41, 41, 41)),
