@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 void main() {
@@ -27,7 +25,7 @@ class MyApp extends StatelessWidget {
             ),
         '/screen4': (BuildContext context) => const Fourth(
               title: 'Fourth Page',
-              nextPage: '/',
+              nextPage: '/screen2',
             ),
       },
     );
@@ -154,7 +152,11 @@ class MyStack extends StatelessWidget {
             padding: const EdgeInsetsDirectional.all(40),
             child: FloatingActionButton.extended(
               onPressed: () {
-                Navigator.of(context).pushNamed(nextPage);
+                if (nextPage == '/screen2') {
+                  Navigator.of(context).pushReplacementNamed(nextPage);
+                } else {
+                  Navigator.of(context).pushNamed(nextPage);
+                }
               },
               label: const Text('Next Page', style: TextStyle()),
             ),
@@ -186,7 +188,7 @@ class MyDialog extends StatelessWidget {
               children: [
                 TextButton(
                   onPressed: () => Navigator.of(context)
-                      .pushNamedAndRemoveUntil('/', (route) => false),
+                      .pushNamedAndRemoveUntil('/screen2', (route) => false),
                   child: const Text(
                     'OK',
                     style: TextStyle(color: Color.fromARGB(157, 41, 41, 41)),
