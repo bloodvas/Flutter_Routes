@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_2/dialog_pages.dart';
+import 'package:flutter_application_2/patterns.dart';
 
 void main() {
   runApp(const MyApp());
@@ -45,7 +47,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return MyStack(widget.title, widget.nextPage);
+    return PatternOfPage(widget.title, widget.nextPage);
   }
 }
 
@@ -62,22 +64,7 @@ class Second extends StatefulWidget {
 class _SecondState extends State<Second> {
   @override
   Widget build(BuildContext context) {
-    return MyStack(widget.title, widget.nextPage);
-    // return Navigator(
-    //   initialRoute: path,
-    //   onGenerateRoute: (RouteSettings settings) {
-    //     WidgetBuilder builder;
-    //     switch (settings.name) {
-    //       case path:
-    //         builder = (BuildContext context) =>
-    //             MyStack(widget.title, widget.nextPath);
-    //         break;
-    //       default:
-    //         throw Exception('Invalid route: ${settings.name}');
-    //     }
-    //     return MaterialPageRoute<void>(builder: builder, settings: settings);
-    //   },
-    // );
+    return PatternOfPage(widget.title, widget.nextPage);
   }
 }
 
@@ -94,7 +81,7 @@ class Third extends StatefulWidget {
 class _ThirdState extends State<Third> {
   @override
   Widget build(BuildContext context) {
-    return MyStack(widget.title, widget.nextPage);
+    return PatternOfPage(widget.title, widget.nextPage);
   }
 }
 
@@ -112,106 +99,12 @@ class _FourthState extends State<Fourth> {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      MyStack(widget.title, widget.nextPage),
-      const Center(child: MyDialog())
+      PatternOfPage(widget.title, widget.nextPage),
+      Center(
+          child: Container(
+        margin: const EdgeInsets.only(bottom: 100),
+        child: const MyDialog(),
+      )),
     ]);
-  }
-}
-
-class MyStack extends StatelessWidget {
-  final String title;
-  final String nextPage;
-
-  const MyStack(this.title, this.nextPage, {Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        backgroundColor: const Color.fromARGB(225, 28, 27, 27),
-      ),
-      body: Stack(
-        children: [
-          Expanded(
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              alignment: Alignment.center,
-              color: const Color.fromARGB(225, 28, 27, 27),
-              child: Text(
-                title,
-                style: const TextStyle(
-                    color: Color.fromARGB(170, 255, 255, 255),
-                    decoration: TextDecoration.none),
-              ),
-            ),
-          ),
-          Container(
-            alignment: Alignment.bottomRight,
-            padding: const EdgeInsetsDirectional.all(40),
-            child: FloatingActionButton.extended(
-              onPressed: () {
-                if (nextPage == '/screen2') {
-                  Navigator.of(context).pushReplacementNamed(nextPage);
-                } else {
-                  Navigator.of(context).pushNamed(nextPage);
-                }
-              },
-              label: const Text('Next Page', style: TextStyle()),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class MyDialog extends StatelessWidget {
-  const MyDialog({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () => showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          title: const Center(child: Text('Go to homePage?')),
-          content: const Icon(
-            Icons.home,
-            color: Color.fromARGB(157, 41, 41, 41),
-            size: 100,
-          ),
-          actions: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: () => Navigator.of(context)
-                      .pushNamedAndRemoveUntil('/screen2', (route) => false),
-                  child: const Text(
-                    'OK',
-                    style: TextStyle(color: Color.fromARGB(157, 41, 41, 41)),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () => Future.delayed(
-                    const Duration(seconds: 1),
-                    (() {
-                      Navigator.of(context).pop('Cancel');
-                    }),
-                  ),
-                  child: const Text(
-                    'CANCEL',
-                    style: TextStyle(color: Color.fromARGB(157, 41, 41, 41)),
-                  ),
-                ),
-              ],
-            )
-          ],
-        ),
-      ),
-      child: const Text('Show Dialog'),
-    );
   }
 }
